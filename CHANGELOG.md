@@ -31,3 +31,9 @@
 - Progress reports per client
 - Client goal setting
 
+
+## v2.2.1
+- Added body measurement tracking
+- Weight history logging
+- Waist and body fat tracking
+
