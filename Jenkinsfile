@@ -8,6 +8,8 @@ pipeline {
         SONAR_TOKEN  = credentials('sonar-token')
         DOCKER_CREDS = credentials('docker-hub-creds')
         GIT_REPO     = "https://github.com/SudhakaranSekar/aceest-fitness-devops.git"
+        PYTHON       = "C:\\Users\\HP\\AppData\\Local\\Programs\\Python\\Python313\\python.exe"
+        PIP          = "C:\\Users\\HP\\AppData\\Local\\Programs\\Python\\Python313\\Scripts\\pip.exe"
     }
 
     stages {
@@ -24,8 +26,8 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo '========== Installing Python dependencies =========='
-                bat 'pip install -r requirements.txt'
-                bat 'pip install pytest pytest-flask'
+                bat '"%PIP%" install -r requirements.txt'
+                bat '"%PIP%" install pytest pytest-flask'
             }
         }
 
@@ -33,7 +35,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 echo '========== Running Pytest unit tests =========='
-                bat 'pytest test_app.py -v --tb=short'
+                bat '"%PYTHON%" -m pytest test_app.py -v --tb=short'
             }
             post {
                 failure {
@@ -49,16 +51,9 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 echo '========== Running SonarQube code analysis =========='
-                bat """
-                    sonar-scanner ^
-                    -Dsonar.projectKey=aceest-fitness ^
-                    -Dsonar.projectName=ACEest-Fitness ^
-                    -Dsonar.projectVersion=${APP_VERSION} ^
-                    -Dsonar.sources=. ^
-                    -Dsonar.python.version=3 ^
-                    -Dsonar.host.url=${SONAR_HOST} ^
-                    -Dsonar.login=${SONAR_TOKEN}
-                """
+                withSonarQubeEnv('SonarQube') {
+                    bat '"%SONAR_SCANNER_HOME%\\bin\\sonar-scanner.bat" -Dsonar.projectKey=aceest-fitness -Dsonar.projectName=ACEest-Fitness -Dsonar.projectVersion=%APP_VERSION% -Dsonar.sources=. -Dsonar.python.version=3 -Dsonar.host.url=%SONAR_HOST% -Dsonar.login=%SONAR_TOKEN%'
+                }
             }
         }
 
@@ -66,8 +61,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo '========== Building Docker image =========='
-                bat "docker build -t ${DOCKER_IMAGE}:${APP_VERSION} ."
-                bat "docker tag ${DOCKER_IMAGE}:${APP_VERSION} ${DOCKER_IMAGE}:latest"
+                bat "docker build -t %DOCKER_IMAGE%:%APP_VERSION% ."
+                bat "docker tag %DOCKER_IMAGE%:%APP_VERSION% %DOCKER_IMAGE%:latest"
             }
         }
 
@@ -75,9 +70,9 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 echo '========== Pushing image to Docker Hub =========='
-                bat "docker login -u ${DOCKER_CREDS_USR} -p ${DOCKER_CREDS_PSW}"
-                bat "docker push ${DOCKER_IMAGE}:${APP_VERSION}"
-                bat "docker push ${DOCKER_IMAGE}:latest"
+                bat "docker login -u %DOCKER_CREDS_USR% -p %DOCKER_CREDS_PSW%"
+                bat "docker push %DOCKER_IMAGE%:%APP_VERSION%"
+                bat "docker push %DOCKER_IMAGE%:latest"
             }
         }
 
@@ -104,21 +99,14 @@ pipeline {
     // ── POST ACTIONS ──────────────────────────────────────
     post {
         success {
-            echo """
-            ============================================
-            PIPELINE SUCCEEDED!
-            App Version : ${APP_VERSION}
-            Docker Image: ${DOCKER_IMAGE}:${APP_VERSION}
-            ============================================
-            """
+            echo '============================================'
+            echo 'PIPELINE SUCCEEDED!'
+            echo '============================================'
         }
         failure {
-            echo """
-            ============================================
-            PIPELINE FAILED!
-            Check the logs above for errors.
-            ============================================
-            """
+            echo '============================================'
+            echo 'PIPELINE FAILED! Check logs above.'
+            echo '============================================'
         }
         always {
             echo 'Pipeline finished. Cleaning up...'
