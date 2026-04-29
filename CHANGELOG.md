@@ -25,3 +25,9 @@
 - Calorie tracking per client
 - New database tables for nutrition
 
+
+## v2.1.2
+- Added weekly adherence tracking
+- Progress reports per client
+- Client goal setting
+
