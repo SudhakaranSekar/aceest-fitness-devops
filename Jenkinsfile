@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = "sudhakaran97/aceest-fitness"
         APP_VERSION  = "v3.2.4"
+        PREV_VERSION = "v3.1.2"
         SONAR_HOST   = "http://host.docker.internal:9000"
         SONAR_TOKEN  = credentials('sonar-token')
         DOCKER_CREDS = credentials('docker-hub-creds')
@@ -108,7 +109,7 @@ pipeline {
         }
     }
 
-    // ── POST ACTIONS ──────────────────────────────────────
+    // ── POST ACTIONS WITH ROLLBACK ────────────────────────
     post {
         success {
             echo '============================================'
@@ -117,8 +118,14 @@ pipeline {
         }
         failure {
             echo '============================================'
-            echo 'PIPELINE FAILED! Check logs above.'
+            echo 'PIPELINE FAILED! Initiating rollback...'
             echo '============================================'
+            bat """
+                echo Rolling back to previous version %PREV_VERSION%...
+                "%KUBECTL%" --kubeconfig="%KUBECONFIG%" set image deployment/aceest-fitness aceest-fitness=%DOCKER_IMAGE%:%PREV_VERSION% || echo Rollback command executed
+                "%KUBECTL%" --kubeconfig="%KUBECONFIG%" rollout status deployment/aceest-fitness || echo Checking rollback status
+                echo Rollback to %PREV_VERSION% completed!
+            """
         }
         always {
             echo 'Pipeline finished. Cleaning up...'
