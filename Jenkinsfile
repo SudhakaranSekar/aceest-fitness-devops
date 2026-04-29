@@ -12,6 +12,7 @@ pipeline {
         PIP          = "C:\\Users\\HP\\AppData\\Local\\Programs\\Python\\Python313\\Scripts\\pip.exe"
         MINIKUBE     = "C:\\Program Files\\Kubernetes\\Minikube\\minikube.exe"
         KUBECTL      = "C:\\Program Files\\Docker\\Docker\\resources\\bin\\kubectl.exe"
+        KUBECONFIG   = "C:\\Users\\HP\\.kube\\config"
     }
 
     stages {
@@ -91,9 +92,9 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 echo '========== Deploying to Kubernetes (Minikube) =========='
-                bat '"%MINIKUBE%" status'
-                bat '"%KUBECTL%" apply -f k8s/rolling-update.yaml'
-                bat '"%KUBECTL%" rollout status deployment/aceest-fitness'
+                bat '"%KUBECTL%" --kubeconfig="%KUBECONFIG%" get nodes'
+                bat '"%KUBECTL%" --kubeconfig="%KUBECONFIG%" apply -f k8s/rolling-update.yaml'
+                bat '"%KUBECTL%" --kubeconfig="%KUBECONFIG%" rollout status deployment/aceest-fitness'
             }
         }
 
@@ -101,8 +102,8 @@ pipeline {
         stage('Verify Deployment') {
             steps {
                 echo '========== Verifying deployment health =========='
-                bat '"%KUBECTL%" get pods -l app=aceest-fitness'
-                bat '"%KUBECTL%" get services'
+                bat '"%KUBECTL%" --kubeconfig="%KUBECONFIG%" get pods -l app=aceest-fitness'
+                bat '"%KUBECTL%" --kubeconfig="%KUBECONFIG%" get services'
             }
         }
     }
