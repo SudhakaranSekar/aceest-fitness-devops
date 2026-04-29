@@ -12,3 +12,9 @@
 - Improved login system
 - UI enhancements
 
+
+## v1.1.2
+- Fixed login session bugs
+- UI improvements
+- Stability updates
+
