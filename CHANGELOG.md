@@ -37,3 +37,9 @@
 - Weight history logging
 - Waist and body fat tracking
 
+
+## v2.2.4
+- Database query optimizations
+- Faster data loading
+- Minor bug fixes
+
