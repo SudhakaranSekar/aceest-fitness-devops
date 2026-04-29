@@ -1,6 +1,5 @@
 # ACEest Fitness & Gym
 
-## Version: v1.0 - Initial Release
-- Basic client registration
-- SQLite database
-- Simple login system
+## Version: v1.1 - Workout Tracking
+- Workout session tracking added
+- Improved login

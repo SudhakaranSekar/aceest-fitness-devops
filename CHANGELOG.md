@@ -6,3 +6,9 @@
 - SQLite database setup
 - Simple login system
 
+
+## v1.1
+- Added workout session tracking
+- Improved login system
+- UI enhancements
+
