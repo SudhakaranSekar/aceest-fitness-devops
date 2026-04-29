@@ -56,3 +56,14 @@
 - Renewal date management
 - Payment status tracking
 
+
+## v3.2.4
+- MAJOR: Converted Tkinter to Flask web app
+- REST API endpoints
+- Kubernetes /health endpoint
+- 18 Pytest unit tests
+- Dockerfile added
+- Jenkinsfile for CI/CD
+- SonarQube integration
+- Kubernetes 5 deployment strategies
+

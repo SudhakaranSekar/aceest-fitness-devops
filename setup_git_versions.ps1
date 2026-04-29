@@ -5,7 +5,7 @@
 # ============================================================
 
 # ── CHANGE THIS TO YOUR GITHUB USERNAME ──────────────────────
-$GITHUB_USERNAME = "sudhakaran sekar"
+$GITHUB_USERNAME = "SudhakaranSekar"
 # ─────────────────────────────────────────────────────────────
 
 $REPO_NAME = "aceest-fitness-devops"
