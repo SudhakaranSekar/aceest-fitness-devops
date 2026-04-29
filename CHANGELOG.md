@@ -50,3 +50,9 @@
 - Admin panel improvements
 - Multi-role user support
 
+
+## v3.1.2
+- Membership tracking added
+- Renewal date management
+- Payment status tracking
+
