@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = "sudhakaran97/aceest-fitness"
         APP_VERSION  = "v3.2.4"
-        SONAR_HOST   = "http://localhost:9000"
+        SONAR_HOST   = "http://host.docker.internal:9000"
         SONAR_TOKEN  = credentials('sonar-token')
         DOCKER_CREDS = credentials('docker-hub-creds')
         GIT_REPO     = "https://github.com/SudhakaranSekar/aceest-fitness-devops.git"
@@ -51,9 +51,18 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 echo '========== Running SonarQube code analysis =========='
-                withSonarQubeEnv('SonarQube') {
-                    bat '"%SONAR_SCANNER_HOME%\\bin\\sonar-scanner.bat" -Dsonar.projectKey=aceest-fitness -Dsonar.projectName=ACEest-Fitness -Dsonar.projectVersion=%APP_VERSION% -Dsonar.sources=. -Dsonar.python.version=3 -Dsonar.host.url=%SONAR_HOST% -Dsonar.login=%SONAR_TOKEN%'
-                }
+                bat """
+                    docker run --rm ^
+                    -e SONAR_HOST_URL=%SONAR_HOST% ^
+                    -e SONAR_TOKEN=%SONAR_TOKEN% ^
+                    -v "%CD%:/usr/src" ^
+                    sonarsource/sonar-scanner-cli:latest ^
+                    -Dsonar.projectKey=aceest-fitness ^
+                    -Dsonar.projectName=ACEest-Fitness ^
+                    -Dsonar.projectVersion=%APP_VERSION% ^
+                    -Dsonar.sources=/usr/src ^
+                    -Dsonar.python.version=3
+                """
             }
         }
 
