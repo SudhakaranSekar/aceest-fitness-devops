@@ -1,0 +1,113 @@
+# ============================================================
+#  ACEest Fitness - Blue-Green Deployment Strategy
+#  Two identical environments - switch traffic instantly
+#  Blue = current live, Green = new version
+# ============================================================
+
+# ── BLUE Deployment (Current Live Version) ──────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aceest-fitness-blue
+  labels:
+    app: aceest-fitness
+    version: blue
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: aceest-fitness
+      version: blue
+  template:
+    metadata:
+      labels:
+        app: aceest-fitness
+        version: blue
+    spec:
+      containers:
+      - name: aceest-fitness
+        image: sudhakaran97/aceest-fitness:v3.1.2
+        ports:
+        - containerPort: 5000
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+
+---
+# ── GREEN Deployment (New Version) ──────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aceest-fitness-green
+  labels:
+    app: aceest-fitness
+    version: green
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: aceest-fitness
+      version: green
+  template:
+    metadata:
+      labels:
+        app: aceest-fitness
+        version: green
+    spec:
+      containers:
+      - name: aceest-fitness
+        image: sudhakaran97/aceest-fitness:v3.2.4
+        ports:
+        - containerPort: 5000
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+
+---
+# ── Service (Switch between Blue and Green) ─────────────────
+# To switch to GREEN: change selector version: blue → green
+apiVersion: v1
+kind: Service
+metadata:
+  name: aceest-fitness-bg-service
+spec:
+  selector:
+    app: aceest-fitness
+    version: blue        # Change to 'green' to switch traffic
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5000
+  type: NodePort

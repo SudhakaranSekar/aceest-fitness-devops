@@ -1,0 +1,133 @@
+# ============================================================
+#  ACEest Fitness - Shadow Deployment Strategy
+#  Mirror real traffic to new version without affecting users
+#  Production handles real traffic, Shadow gets mirrored copy
+# ============================================================
+
+# ── Production Deployment (handles real traffic) ─────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aceest-fitness-production
+  labels:
+    app: aceest-fitness
+    track: production
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: aceest-fitness
+      track: production
+  template:
+    metadata:
+      labels:
+        app: aceest-fitness
+        track: production
+        version: v3.1.2
+    spec:
+      containers:
+      - name: aceest-fitness
+        image: sudhakaran97/aceest-fitness:v3.1.2
+        ports:
+        - containerPort: 5000
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+
+---
+# ── Shadow Deployment (receives mirrored traffic) ────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aceest-fitness-shadow
+  labels:
+    app: aceest-fitness
+    track: shadow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aceest-fitness
+      track: shadow
+  template:
+    metadata:
+      labels:
+        app: aceest-fitness
+        track: shadow
+        version: v3.2.4
+    spec:
+      containers:
+      - name: aceest-fitness
+        image: sudhakaran97/aceest-fitness:v3.2.4
+        ports:
+        - containerPort: 5000
+        env:
+        - name: SHADOW_MODE
+          value: "true"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+
+---
+# ── Production Service (serves real users) ───────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: aceest-fitness-production-service
+spec:
+  selector:
+    app: aceest-fitness
+    track: production
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5000
+  type: NodePort
+
+---
+# ── Shadow Service (receives mirrored traffic) ───────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: aceest-fitness-shadow-service
+spec:
+  selector:
+    app: aceest-fitness
+    track: shadow
+  ports:
+  - protocol: TCP
+    port: 82
+    targetPort: 5000
+  type: NodePort
