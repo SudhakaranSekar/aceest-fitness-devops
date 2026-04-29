@@ -1,5 +1,5 @@
 # ACEest Fitness & Gym
 
-## Version: v2.0.1 - Nutrition Module
-- Full nutrition planning
-- Calorie tracking
+## Version: v2.1.2 - Progress Tracking
+- Weekly adherence tracking
+- Progress reports
