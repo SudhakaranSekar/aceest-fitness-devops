@@ -18,3 +18,10 @@
 - UI improvements
 - Stability updates
 
+
+## v2.0.1
+- Added full nutrition planning module
+- Diet recommendations by goal
+- Calorie tracking per client
+- New database tables for nutrition
+
