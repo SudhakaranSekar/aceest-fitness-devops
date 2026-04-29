@@ -10,6 +10,8 @@ pipeline {
         GIT_REPO     = "https://github.com/SudhakaranSekar/aceest-fitness-devops.git"
         PYTHON       = "C:\\Users\\HP\\AppData\\Local\\Programs\\Python\\Python313\\python.exe"
         PIP          = "C:\\Users\\HP\\AppData\\Local\\Programs\\Python\\Python313\\Scripts\\pip.exe"
+        MINIKUBE     = "C:\\Program Files\\Kubernetes\\Minikube\\minikube.exe"
+        KUBECTL      = "C:\\Program Files\\Docker\\Docker\\resources\\bin\\kubectl.exe"
     }
 
     stages {
@@ -89,9 +91,9 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 echo '========== Deploying to Kubernetes (Minikube) =========='
-                bat 'minikube status'
-                bat 'kubectl apply -f k8s/rolling-update.yaml'
-                bat 'kubectl rollout status deployment/aceest-fitness'
+                bat '"%MINIKUBE%" status'
+                bat '"%KUBECTL%" apply -f k8s/rolling-update.yaml'
+                bat '"%KUBECTL%" rollout status deployment/aceest-fitness'
             }
         }
 
@@ -99,8 +101,8 @@ pipeline {
         stage('Verify Deployment') {
             steps {
                 echo '========== Verifying deployment health =========='
-                bat 'kubectl get pods -l app=aceest-fitness'
-                bat 'kubectl get services'
+                bat '"%KUBECTL%" get pods -l app=aceest-fitness'
+                bat '"%KUBECTL%" get services'
             }
         }
     }
