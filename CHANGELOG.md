@@ -43,3 +43,10 @@
 - Faster data loading
 - Minor bug fixes
 
+
+## v3.0.1
+- Full dashboard with charts
+- Data visualizations using matplotlib
+- Admin panel improvements
+- Multi-role user support
+

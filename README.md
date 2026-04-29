@@ -1,5 +1,5 @@
 # ACEest Fitness & Gym
 
-## Version: v2.2.4 - Performance
-- Database optimizations
-- Bug fixes
+## Version: v3.0.1 - Full Dashboard
+- Charts and visualizations
+- Admin panel
