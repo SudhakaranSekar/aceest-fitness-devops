@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ACEest Fitness - Login</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f0f0f; min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; }
+  .container { width: 100%; max-width: 400px; padding: 20px; }
+  .logo { text-align: center; margin-bottom: 40px; }
+  .logo h1 { font-family: 'Bebas Neue', sans-serif; font-size: 52px; color: #d4af37; letter-spacing: 4px; }
+  .logo p { color: #888; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
+  .card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 36px; }
+  .card h2 { color: #fff; font-size: 20px; font-weight: 500; margin-bottom: 28px; }
+  .field { margin-bottom: 20px; }
+  .field label { display: block; color: #888; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .field input { width: 100%; background: #111; border: 1px solid #2a2a2a; border-radius: 8px; padding: 12px 16px; color: #fff; font-size: 15px; outline: none; transition: border-color 0.2s; }
+  .field input:focus { border-color: #d4af37; }
+  .btn { width: 100%; background: #d4af37; color: #000; border: none; border-radius: 8px; padding: 14px; font-size: 15px; font-weight: 500; cursor: pointer; letter-spacing: 1px; margin-top: 8px; transition: background 0.2s; }
+  .btn:hover { background: #e8c84a; }
+  .error { background: #2a1515; border: 1px solid #5a2020; border-radius: 8px; padding: 12px 16px; color: #e87070; font-size: 14px; margin-bottom: 20px; }
+  .hint { text-align: center; color: #444; font-size: 12px; margin-top: 20px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="logo">
+    <h1>ACEest</h1>
+    <p>Fitness &amp; Performance</p>
+  </div>
+  <div class="card">
+    <h2>Sign In</h2>
+    {% if error %}
+    <div class="error">{{ error }}</div>
+    {% endif %}
+    <form method="POST">
+      <div class="field">
+        <label>Username</label>
+        <input type="text" name="username" placeholder="Enter username" required autofocus>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Enter password" required>
+      </div>
+      <button type="submit" class="btn">Login</button>
+    </form>
+  </div>
+  <p class="hint">Default: admin / admin</p>
+</div>
+</body>
+</html>
